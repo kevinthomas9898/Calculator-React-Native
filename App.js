@@ -1,54 +1,169 @@
-import React, { Component } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 class App extends Component {
-  state = {
-    todos: [],
-    newTodo: '',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      displayValue: '0',
+      firstOperand: null,
+      operator: null,
+      waitingForOperand: false,
+    };
+  }
 
-  addTodo = () => {
-    if (this.state.newTodo !== '') {
-      const newId = Date.now();
-      const newTodo = {
-        text: this.state.newTodo,
-        id: newId,
-      };
-      this.setState((prevState) => ({
-        todos: [...prevState.todos, newTodo],
-        newTodo: '',
-      }));
+  handleDigitPress = digit => {
+    const {displayValue, waitingForOperand} = this.state;
+
+    if(waitingForOperand) {
+      this.setState({
+        displayValue: String(digit),
+        waitingForOperand: false,
+      });
+    } else {
+      this.setState({
+        displayValue: displayValue === '0' ? String(digit) : displayValue + digit,
+      });
     }
+  }
+
+  handleOperatorPress = operator => {
+    const {displayValue} = this.state;
+    const inputValue = parseFloat(displayValue);
+
+    this.setState({
+      waitingForOperand: true,
+      operator: operator,
+      firstOperand: inputValue,
+    });
   };
 
-  deleteTodo = (id) => {
-    const updatedTodos = this.state.todos.filter((todo) => todo.id !== id);
-    this.setState({ todos: updatedTodos });
+  handleEqualPress = () => {
+    const { displayValue, operator, firstOperand} = this.state;
+
+    const secondOperand = parseFloat(displayValue);
+
+    if(operator === '+') {
+      this.setState({ displayValue: String(firstOperand + secondOperand)})
+    } else if(operator === '-') {
+      this.setState({ displayValue: String(firstOperand - secondOperand)})
+    } else if(operator === '*') {
+      this.setState({ displayValue: String(firstOperand * secondOperand)})
+    } else if(operator === '/') {
+      this.setState({ displayValue: String(firstOperand / secondOperand)})
+    }
+
+    this.setState({
+      waitingForOperand: true,
+      operator: null,
+      firstOperand: null,
+    });
+  };
+
+  handleClearPress = () => {
+    this.setState({
+      waitingForOperand: false,
+      displayValue: '0',
+      firstOperand: null,
+      operator: null,
+    });
   };
 
   render() {
+    const {displayValue} = this.state;
+
     return (
       <View style={styles.container}>
-        <Text style={styles.heading}>Todo List</Text>
-        {this.state.todos.map((todo) => (
-          <View key={todo.id} style={styles.todoItem}>
-            <Text style={styles.todoText}>{todo.text}</Text>
-            <Button
-              title="Delete"
-              onPress={() => this.deleteTodo(todo.id)}
-              color="red"
-            />
-          </View>
-        ))}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={this.state.newTodo}
-            onChangeText={(text) => this.setState({ newTodo: text })}
-            placeholder="Enter a new todo"
-          />
-          <Button style={styles.addButton} title="Add" onPress={this.addTodo} />
+        <Text style={styles.display}>{displayValue}</Text>
+
+        <View style={styles.buttonContainer}>
+        <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleOperatorPress('+')}>
+            <Text style={styles.buttonText}>+</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleOperatorPress('-')}>
+            <Text style={styles.buttonText}>-</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleOperatorPress('/')}>
+            <Text style={styles.buttonText}>/</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleOperatorPress('*')}>
+            <Text style={styles.buttonText}>*</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={this.handleEqualPress}>
+            <Text style={styles.buttonText}>=</Text>
+          </TouchableOpacity>
+
+
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(0)}>
+            <Text style={styles.buttonText}>0</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(1)}>
+            <Text style={styles.buttonText}>1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(2)}>
+            <Text style={styles.buttonText}>2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(3)}>
+            <Text style={styles.buttonText}>3</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(4)}>
+            <Text style={styles.buttonText}>4</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(5)}>
+            <Text style={styles.buttonText}>5</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(6)}>
+            <Text style={styles.buttonText}>6</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(7)}>
+            <Text style={styles.buttonText}>7</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(8)}>
+            <Text style={styles.buttonText}>8</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handleDigitPress(9)}>
+            <Text style={styles.buttonText}>9</Text>
+          </TouchableOpacity>
+          {/* Add more digit buttons (0-9) here */}
         </View>
+
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={this.handleClearPress}>
+          <Text style={styles.clearButtonText}>Clear</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -57,61 +172,37 @@ class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 10,
   },
-  addButton: {
-    backgroundColor: 'green',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    fontSize: 20,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  display: {
+    fontSize: 40,
     marginBottom: 20,
   },
-  todoItem: {
+  buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  button: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor: '#ffffff',
-    padding: 10,
-    borderRadius: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    margin: 10,
+    backgroundColor: '#DDDDDD',
+    borderRadius: 40,
   },
-  todoText: {
-    flex: 1,
-    marginRight: 10,
+  buttonText: {
+    fontSize: 30,
+  },
+  clearButton: {
+    marginTop: 20,
+  },
+  clearButtonText: {
     fontSize: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  input: {
-    flex: 1,
-    marginRight: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: '#ffffff',
-    fontSize: 20,
+    color: 'red',
   },
 });
 
